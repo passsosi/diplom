@@ -8,11 +8,13 @@ use App\models\Test;
 use App\models\Video;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Auth;
+use App\models\User;
+use App\models\CaseModel;
 
 class HomeController extends Controller
 {
     public function listOutput()
     {
-        return view('home', ['homeData' => Home::all(), 'testData'=> Test::all(), 'litData'=> Literature::all(), 'videoData'=> Video::all()]);
+        return view('home', ['homeData' => Home::all(), 'testData'=> Test::all(), 'litData'=> Literature::all(), 'videoData'=> Video::all(), 'caseData'=> CaseModel::all()]);
     }
 }

@@ -8,6 +8,11 @@ use Illuminate\Support\Facades\Storage;
 
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\TestController;
+use App\Http\Controllers\ProfileController;
+
+Route::get('/errorPage', function () {
+    return view('errorPage');
+});
 
 Route::get('/testpage/{id}', [TestController::class, 'testOutput'])->name('testpage');
     
@@ -16,6 +21,8 @@ Route::get('/', [HomeController::class, 'ListOutput'])->name('home');
 Route::post('/{tid}/{tmid}/testResult', [TestController::class, 'testResult'])->name('testResult');
 
 Route::get('/{tid}/{tmid}/compTestPage', [TestController::class, 'compView'])->name('compTestPage');
+
+Route::get('/profile', [ProfileController::class, 'profileOutput'])->name('profile');
 
 Route::get('/login', function () {
     if (Auth::check()) {

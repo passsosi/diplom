@@ -8,7 +8,9 @@
     <h1>Вы не вошли</h1>
 @endif
 
-
+@error('err')
+    <h3>{{$message}}<h3>
+@enderror
 
 <h1 style="text-align: center;">КАКАЯ ТА ШАПКА ХЗ</h1>
 <h2 style="text-align: center;">ТЕСТЫ</h2>
@@ -27,44 +29,39 @@
     function redirect(categoryId) {
         window.location.href = "{{ route('testpage', ':categoryId') }}".replace(':categoryId', categoryId);
     }
-  </script>
-
+</script>
 @endforeach
 
-<h2 style="text-align: center;">Медиафайлсы</h2>
-<h3 style="text-align: center;">Видики</h3>
-@foreach ($videoData as $el)
+
+
+<?php $user = auth()->user(); ?>
+@if($user != null)
+<h2 style="text-align: center;">КЕЙСЫ</h2>
+@if($user->test1resultSTRING != null || $user->test2resultSTRING != null || $user->test3resultSTRING != null) 
+@foreach ($caseData as $el)
 <div style="display: inline-block;">
     <div>
         <img src="data:image/jpeg;base64,{{ base64_encode($el->preview) }}" class="img-fluid w-100 card-img-top" style="max-width: 100%; min-height: 420px; max-height: 420px; object-fit: cover;" alt="Image">
         <div>
             <h2>{{$el->name}}</h2>
+            <button type="button" onclick="redirect({{$el->id}})">Пройти тест</button>
         </div>
     </div>
 </div>
+
+<script>
+    function redirect(categoryId) {
+        window.location.href = "{{ route('casepage', ':categoryId') }}".replace(':categoryId', categoryId);
+    }
+</script>
 @endforeach
-<h3 style="text-align: center;">Аудио</h3>
-@foreach ($litData as $el)
-<div style="display: inline-block;">
-    <div>
-        <img src="data:image/jpeg;base64,{{ base64_encode($el->image) }}" class="img-fluid w-100 card-img-top" style="max-width: 100%; min-height: 420px; max-height: 420px; object-fit: cover;" alt="Image">
-        <div>
-            <h2>{{$el->name}}</h2>
-        </div>
-    </div>
-</div>
-@endforeach
-<h3 style="text-align: center;">Литература</h3>
-@foreach ($litData as $el)
-<div style="display: inline-block;">
-    <div>
-        <img src="data:image/jpeg;base64,{{ base64_encode($el->image) }}" class="img-fluid w-100 card-img-top" style="max-width: 100%; min-height: 420px; max-height: 420px; object-fit: cover;" alt="Image">
-        <div>
-            <h2>{{$el->name}}</h2>
-        </div>
-    </div>
-</div>
-@endforeach
+
+@else
+<h3>Пройдите тест, чтобы увидеть рекомендуемые вам кейсы!</h3>
+@endif
+@else
+<h3>Войдите в аккаунт чтобы увидеть больше контента!</h3>
+@endif
 
 @endsection
 

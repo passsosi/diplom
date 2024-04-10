@@ -14,17 +14,27 @@ class TestController extends Controller
 {
     public function testOutput($id)
     {
+        if (Auth::check()) {
         $tData  = Test::where('id', $id)->get();
         $tMData = TestMethod::where('id', $tData[0]->textMethod_id)->get();
         $qData = Question::where('test_id', $id)->get();
         $aData = Answer::all();
 
-        return view('testPage', [
-        'tData' => $tData,
-        'tMData' => $tMData,
-        'qData' => $qData,
-        'aData' => $aData
-        ]);
+        if(isset($qData[0])){
+            return view('testPage', [
+                'tData' => $tData,
+                'tMData' => $tMData,
+                'qData' => $qData,
+                'aData' => $aData
+                ]);
+        }
+        else{
+            return redirect('/errorPage');
+        }
+        }
+        else{
+            return redirect(route('home'))->withErrors(['err' => 'Вы не вошли в аккаунт']);
+        }
     }
 
     public function testResult(Request $req, $test_id, $tm_id)
@@ -115,8 +125,6 @@ class TestController extends Controller
                     break;
                 }
                 $i++;
-                $out = new \Symfony\Component\Console\Output\ConsoleOutput();
-                $out->writeln($b);
             }
             
             if($b > 60){

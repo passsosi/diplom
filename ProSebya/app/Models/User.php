@@ -24,7 +24,9 @@ class User extends Authenticatable
         'test1resultINT',
         'test1resultSTRING',
         'test2resultINT',
-        'test2resultSTRING'
+        'test2resultSTRING',
+        'user_role',
+        'image'
     ];
 
     /**

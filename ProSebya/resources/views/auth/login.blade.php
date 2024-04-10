@@ -33,6 +33,7 @@
                     <button class="btn bg-primary btn-outline-light btn-lg px-5" type="submit">Вход</button>
 
                 </form>
+                <a href="/register">Создать аккаунт</a>
               </div>
             </div>
           </div>

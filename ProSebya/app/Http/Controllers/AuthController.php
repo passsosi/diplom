@@ -16,11 +16,23 @@ class AuthController extends Controller
             'email' => 'required|unique:users',
             'password' => ['required', 'string', 'min:8'],
         ]);
+        $role = 1;
+        $imgReq = $request->file('image');
+        if($imgReq != null){
+            $img = file_get_contents($imgReq->getRealPath());
+        }
+        else{
+            $imagePath = "images/emptyImage.jpg";
+            $imageData = file_get_contents($imagePath);
+            $img = $imageData;
+        }
 
         $user = new User([
             'name' => $request->input('name'),
             'email' => $request->input('email'),
             'password' => Hash::make($request->input('password')),
+            'user_role' => $role,
+            'image' => $img
         ]);
 
         $user->save();

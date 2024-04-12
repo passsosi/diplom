@@ -14,11 +14,13 @@ class TestController extends Controller
 {
     public function testOutput($id)
     {
-        if (Auth::check()) {
+        if (Auth::check()) { // если пользователь авторизован
+
         $tData  = Test::where('id', $id)->get();
         $tMData = TestMethod::where('id', $tData[0]->textMethod_id)->get();
         $qData = Question::where('test_id', $id)->get();
         $aData = Answer::all();
+        // получаем данные
 
         if(isset($qData[0])){
             return view('testPage', [
@@ -39,21 +41,23 @@ class TestController extends Controller
 
     public function testResult(Request $req, $test_id, $tm_id)
     {
-        if($tm_id == 1)
+        if($tm_id == 1) // если id методики равно 1
         {
             $i = 1;
             $b = 0;
-            foreach($req->answers as $el){
-                if($i % 2 != 0){
-                    if($el > 3){
+            // объявляем переменные номера вопроса и количества баллов
+
+            foreach($req->answers as $el){ // пересчет ответов
+                if($i % 2 != 0){ // проверяем номер вопроса на чётность
+                    if($el > 3){ // если ответ положительный - добавляем балл
                         $b = $b + 1;
                     }
-                } else {
-                    if($el < 4){
-                        $b = $b + 1;
+                } else { // ответ нечётный
+                    if($el < 4){ // ответ отрицательный
+                        $b = $b + 1; // добавляем балл
                     }
                 }
-                $i = $i + 1;
+                $i = $i + 1; // номер вопроса + 1
             }
             
             if($b > 7){
@@ -69,13 +73,15 @@ class TestController extends Controller
             {
                 $s = "Низкий уровень внушаемости";
             }
+            // присваеваем уровень внушаемости в зависимости от количества баллов
     
-            $user = auth()->user();
+            $user = auth()->user(); // получаем данные пользователя
             $user->update([
                 'test1resultINT' => $b,
                 'test1resultSTRING' => $s,
             ]);
-    
+            // присваеваем результаты теста соответствующему пользователю
+
             return view('compTestPage', [
             'req' => $req,
             'tData' => $test_id,
@@ -85,10 +91,11 @@ class TestController extends Controller
             ]);
         }
 
-        elseif($tm_id == 2)
+        elseif($tm_id == 2) // если id метода равно 2
         {
             $i = 1;
             $b = 0;
+            // объявляем переменные
             foreach($req->answers as $el){
                 switch ($i) {
                     case 1:
@@ -101,7 +108,8 @@ class TestController extends Controller
                     case 22:
                         $b += $el;
                     break;
-                    default:
+                    // если номер вопроса равен 1, 9, 11 и тд., добавляем в баллы соответствующее значение ответа
+                    default: // если номер вопроса не совпадает с необходимыми
                         switch($el){
                             case 1:
                                 $b += 6;
@@ -121,6 +129,7 @@ class TestController extends Controller
                             case 6:
                                 $b += 1;
                             break;
+                            // добавляем в баллы обратные от ответав значения
                         }
                     break;
                 }
@@ -140,6 +149,7 @@ class TestController extends Controller
             {
                 $s = "Низкий уровень толерантности";
             }
+            // присваеваем результаты теста соответствующему пользователю
     
             $user = auth()->user();
             $user->update([

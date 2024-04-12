@@ -20,13 +20,13 @@
         <img src="data:image/jpeg;base64,{{ base64_encode($el->image) }}" class="img-fluid w-100 card-img-top" style="max-width: 100%; min-height: 420px; max-height: 420px; object-fit: cover;" alt="Image">
         <div>
             <h2>{{$el->name}}</h2>
-            <button type="button" onclick="redirect({{$el->id}})">Пройти тест</button>
+            <button type="button" onclick="redirectT({{$el->id}})">Пройти тест</button>
         </div>
     </div>
 </div>
 
 <script>
-    function redirect(categoryId) {
+    function redirectT(categoryId) {
         window.location.href = "{{ route('testpage', ':categoryId') }}".replace(':categoryId', categoryId);
     }
 </script>
@@ -44,13 +44,13 @@
         <img src="data:image/jpeg;base64,{{ base64_encode($el->preview) }}" class="img-fluid w-100 card-img-top" style="max-width: 100%; min-height: 420px; max-height: 420px; object-fit: cover;" alt="Image">
         <div>
             <h2>{{$el->name}}</h2>
-            <button type="button" onclick="redirect({{$el->id}})">Пройти тест</button>
+            <button type="button" onclick="redirectC({{$el->id}})">Пройти тест</button>
         </div>
     </div>
 </div>
 
 <script>
-    function redirect(categoryId) {
+    function redirectC(categoryId) {
         window.location.href = "{{ route('casepage', ':categoryId') }}".replace(':categoryId', categoryId);
     }
 </script>

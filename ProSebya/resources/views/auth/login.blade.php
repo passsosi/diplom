@@ -8,23 +8,27 @@
           <div class="card bg-light" style="border-radius: 1rem;">
             <div class="card-body p-5 text-center">
               <div class="mb-md-5 mt-md-4 pb-5">
-                <form method="POST" action="{{ route('login') }}">
+                <form class="form-auth" method="POST" action="{{ route('login') }}">
                     @csrf
 
                     <h2 class="fw-bold mb-2 text-uppercase">Вход</h2>
                     <p class="text-white-50 mb-5">Введите данные</p>
+                    @error('email')
+                      <div class="alert">{{ $message }}</div>
+                    @enderror
 
                     <div class="form-outline form-white mb-4">
+                      <label class="form-label" for="email">Логин</label>
                         <input type="email" id="email" name="email" class="form-control form-control-lg" />
-                        <label class="form-label" for="email">Логин</label>
-                        @error('email')
-                            <div class="alert">{{ $message }}</div>
-                        @enderror
+                        
+                        
                     </div>
     
                     <div class="form-outline form-white mb-4">
+
+                      <label class="form-label" for="password">Пароль</label>
                         <input type="password" id="password" name="password" class="form-control form-control-lg" />
-                        <label class="form-label" for="password">Пароль</label>
+                        
                         @error('password')
                         <div class="alert">{{ $message }}</div>
                         @enderror
@@ -32,8 +36,9 @@
     
                     <button class="btn bg-primary btn-outline-light btn-lg px-5" type="submit">Вход</button>
 
+                    <a href="/register">Создать аккаунт</a>
                 </form>
-                <a href="/register">Создать аккаунт</a>
+                
               </div>
             </div>
           </div>

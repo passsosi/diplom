@@ -1,7 +1,5 @@
 @extends('layout')
 @section('content')
-
-<h1 style="text-align: center;">КАКАЯ ТА ШАПКА ХЗ</h1>
 <div style="display: inline-block;">
     <div>
         <img src="data:image/jpeg;base64,{{ base64_encode($user->image) }}" class="img-fluid w-100 card-img-top" style="max-width: 100%; min-height: 420px; max-height: 420px; object-fit: cover;" alt="Image">

@@ -1,67 +1,78 @@
 @extends('layout')
 @section('content')
 
+    @error('err')
+        <h3 class="error">{{ $message }}</h3>
+            @enderror
 
-@if(Auth::check())
-    <h1>Вы вошли</h1>
-@else
-    <h1>Вы не вошли</h1>
-@endif
+            <main class="main">
+                <div class="container">
+                    <h1 class="page_tests-title">Тесты</h1>
+                    <div class="test-cards">
+                        @foreach ($testData as $el)
+                            <div class="test-card">
+                                <img src="data:image/jpeg;base64,{{ base64_encode($el->image) }}"
+                                    class="img-fluid w-100 card-img-top" alt="Image">
+                                <div class="card-content">
+                                    <h2 class="card-text">{{ $el->name }}</h2>
+                                    <button class="test-button" type="button"
+                                        onclick="redirectT({{ $el->id }})">Пройти тест</button>
+                                </div>
 
-@error('err')
-    <h3>{{$message}}<h3>
-@enderror
+                            </div>
 
-<h1 style="text-align: center;">КАКАЯ ТА ШАПКА ХЗ</h1>
-<h2 style="text-align: center;">ТЕСТЫ</h2>
-@foreach ($testData as $el)
-<div style="display: inline-block;">
-    <div>
-        <img src="data:image/jpeg;base64,{{ base64_encode($el->image) }}" class="img-fluid w-100 card-img-top" style="max-width: 100%; min-height: 420px; max-height: 420px; object-fit: cover;" alt="Image">
-        <div>
-            <h2>{{$el->name}}</h2>
-            <button type="button" onclick="redirectT({{$el->id}})">Пройти тест</button>
-        </div>
-    </div>
-</div>
-
-<script>
-    function redirectT(categoryId) {
-        window.location.href = "{{ route('testpage', ':categoryId') }}".replace(':categoryId', categoryId);
-    }
-</script>
-@endforeach
+                            <script>
+                                function redirectT(categoryId) {
+                                    window.location.href = "{{ route('testpage', ':categoryId') }}".replace(':categoryId', categoryId);
+                                }
+                            </script>
+                        @endforeach
+                    </div>
 
 
+                    <?php $user = auth()->user(); ?>
+                    @if ($user != null)
 
-<?php $user = auth()->user(); ?>
-@if($user != null)
-<h2 style="text-align: center;">КЕЙСЫ</h2>
-@if($user->test1resultSTRING != null || $user->test2resultSTRING != null || $user->test3resultSTRING != null) 
-@foreach ($caseData as $el)
-<div style="display: inline-block;">
-    <div>
-        <img src="data:image/jpeg;base64,{{ base64_encode($el->preview) }}" class="img-fluid w-100 card-img-top" style="max-width: 100%; min-height: 420px; max-height: 420px; object-fit: cover;" alt="Image">
-        <div>
-            <h2>{{$el->name}}</h2>
-            <button type="button" onclick="redirectC({{$el->id}})">Пройти тест</button>
-        </div>
-    </div>
-</div>
+                        <h2 class="page_tests-title">Кейсы</h2>
 
-<script>
-    function redirectC(categoryId) {
-        window.location.href = "{{ route('casepage', ':categoryId') }}".replace(':categoryId', categoryId);
-    }
-</script>
-@endforeach
+                        @if ($user->test1resultSTRING != null || $user->test2resultSTRING != null || $user->test3resultSTRING != null)
+                        <div class="test-cards">
+                            @foreach ($caseData as $el)
+                                <div class="test-card">
+                                    <img src="data:image/jpeg;base64,{{ base64_encode($el->preview) }}"
+                                        class="img-fluid w-100 card-img-top" alt="Image">
+                                    <div class="card-content">
+                                        <h2 class="card-text">{{ $el->name }}</h2>
+                                        <button class="test-button" type="button"
+                                            onclick="redirectC({{ $el->id }})">Пройти тест</button>
+                                    </div>
+                                </div>
 
-@else
-<h3>Пройдите тест, чтобы увидеть рекомендуемые вам кейсы!</h3>
-@endif
-@else
-<h3>Войдите в аккаунт чтобы увидеть больше контента!</h3>
-@endif
+                                <script>
+                                    function redirectC(categoryId) {
+                                        window.location.href = "{{ route('casepage', ':categoryId') }}".replace(':categoryId', categoryId);
+                                    }
+                                </script>
+                            @endforeach
+                            @if($user->user_role > 1)
+                            <button class="test-button" type="button"
+                            onclick="createC()">Создать кейс
+                            </button>
 
-@endsection
+                            <script>
+                                function createC(categoryId) {
+                                    window.location.href = "{{ route('caseCreateView') }}".replace(':categoryId', categoryId);
+                                }
+                            </script>
+                            @endif
+                        </div>
+                        @else
+                            <h3 class="error">Пройдите тест, чтобы увидеть рекомендуемые вам кейсы!</h3>
+                        @endif
+                    @else
+                        <h3 class="error">Войдите в аккаунт чтобы увидеть больше контента!</h3>
+                    @endif
+                </div>
+            </main>
 
+        @endsection

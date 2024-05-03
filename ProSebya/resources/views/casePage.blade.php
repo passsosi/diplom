@@ -1,9 +1,6 @@
 @extends('layout')
 @section('content')
 
-
-<h1 style="text-align: center;">КАКАЯ ТА ШАПКА ХЗ</h1>
-
 <form method="post" style="width: 800px; margin: 0 auto; background-color:rgb(221, 220, 218); padding: 10px">
     @csrf
     @foreach ($qData as $el)

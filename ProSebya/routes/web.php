@@ -17,6 +17,10 @@ Route::get('/errorPage', function () {
 
 Route::get('/casepage/{id}', [CaseController::class, 'caseOutput'])->name('casepage');
 
+Route::get('/caseCreate', [CaseController::class, 'caseCreateView'])->name('caseCreateView');
+
+Route::post('/caseCreate', [CaseController::class, 'caseCreate'])->name('caseCreate');
+
 Route::get('/testpage/{id}', [TestController::class, 'testOutput'])->name('testpage');
     
 Route::get('/', [HomeController::class, 'ListOutput'])->name('home');

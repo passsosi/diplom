@@ -46,21 +46,27 @@ class CaseController extends Controller
     }
 
     public function caseCreate(Request $req)
-    {
-        dd($req);
-
+    {        
         $сase = new CaseModel();
         $сase->name = $req->input('name');
-
-        if($req->file('image') != null)
-        foreach ($req->file('image') as $img){
-            $image = $сase->preview;
-            $imgData = file_get_contents($img->getRealPath());
-            $image = $imgData;
-        }
         
-        $сase->save();
-        $сase = Item::latest()->first();     
+        if($req->file('image') != null)
+        {
+            $img = $req->file('image');
+                if ($img->getClientOriginalExtension() == 'png' || $img->getClientOriginalExtension() == 'jpeg' || $img->getClientOriginalExtension() == 'jpg')
+                {
+                    $imgData = file_get_contents($img->getRealPath());
+                    $image = $imgData;
+                    $сase->preview = $image;
+                    $сase->save();
+                }   
+                else {
+                    Session::flash('status', 'NOT IMAGE');
+                    return redirect()->back();
+                }
+        }
+        dd("SUCCES");
+        $сase = CaseModel::latest()->first();     
 
         if ($req->file('file') != null) {
             foreach ($req->file('file') as $fl) {

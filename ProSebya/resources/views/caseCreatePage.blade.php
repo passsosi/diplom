@@ -17,9 +17,6 @@
                 <div>
                     <h4>Изображение кейса</h4>
                     <input type="file" id="image"  name="image">
-                    @error('image')
-                    <div>{{ $message }}</div>
-                    @enderror
                 </div>
 
                 <div>
@@ -33,6 +30,13 @@
                 </form>
             </div>
 
+            @if(session('status'))
+            {{-- Нужно сделать всплывающее окно --}}
+            <div>
+                {{ session('status') }}
+            </div>
+            @endif
+
             <script >
                 var i = 1;
                 var q = "q";
@@ -41,10 +45,11 @@
                 var f = "f";
 
                 const addFieldsBtn = document.getElementById('addFieldsBtn');
-                const questionDiv = document.createElement('div');
+                
 
                 function createQuestion(){
-
+                    const questionDiv = document.createElement('div');
+                    
                     const fileDiv = document.createElement('div');
                     const fileInput = document.createElement('input');
                     fileInput.type = 'file';

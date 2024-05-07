@@ -55,23 +55,31 @@ class CaseController extends Controller
             $img = $req->file('image');
                 if ($img->getClientOriginalExtension() == 'png' || $img->getClientOriginalExtension() == 'jpeg' || $img->getClientOriginalExtension() == 'jpg')
                 {
-                    $imgData = file_get_contents($img->getRealPath());
+                   $imgData = file_get_contents($img->getRealPath());
                     $image = $imgData;
                     $сase->preview = $image;
                     $сase->save();
-                }   
+                }
                 else {
-                    Session::flash('status', 'NOT IMAGE');
+                    Session::flash('status', 'В изображении кейса должен быть файл формата: png, jpg или jpeg.');
                     return redirect()->back();
                 }
         }
-        dd("SUCCES");
-        $сase = CaseModel::latest()->first();     
+        $case = CaseModel::latest()->first();     
 
-        if ($req->file('file') != null) {
-            foreach ($req->file('file') as $fl) {
+        dd($req->request);
+
+        $filteredFiles = [];
+        $files = $req->files;
+        foreach ($files as $name => $file) {
+            if (strpos($name, 'f') !== false) {
+                $filteredFiles[$name] = $file;
+            }
+        }
+        if ($filteredFiles != null) {
+            foreach ($filteredFiles as $fl) {
                 $file = new CaseMaterials();
-                $file->question_id = $item->id;
+                $file->question_id = $case->id;
                 $flData = file_get_contents($fl->getRealPath());
                 $file->file = $flData;
                 $format = $fl->getClientOriginalExtension();
@@ -82,19 +90,13 @@ class CaseController extends Controller
             }
         }
 
-        $data = Item::findOrFail($item->id);
-        $images = Image::where('id_item', $item->id)->get();
-        $docs = Documents::where('id_item', $item->id)->get();
-        $category = TCtg::all();
-        $itemCategory = TCtg::where('id', $data->id_category)->get();
-
-        return view('update', [
-            'data' => $data,
-            'images' => $images,
-            'documents' => $docs,
-            'category' => $category,
-            'itemCategory' => $itemCategory
-        ]);   
+        dd('succes');
+        // return view('update', [
+        //     'data' => $data,
+        //     'images' => $images,
+        //     'documents' => $docs,
+        //     'category' => $category,
+        //     'itemCategory' => $itemCategory
+        // ]);   
     }
-
 }

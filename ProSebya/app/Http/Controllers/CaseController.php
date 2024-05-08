@@ -6,6 +6,7 @@ use App\models\CaseModel;
 use App\models\CaseQuestion;
 use App\models\CaseMaterials;
 use App\models\CaseAnswer;
+use App\models\CasesToResult;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Auth;
 use App\models\User;
@@ -46,9 +47,15 @@ class CaseController extends Controller
     }
 
     public function caseCreate(Request $req)
-    {        
+    {       
         $сase = new CaseModel();
-        $сase->name = $req->input('name');
+        if($req->input('name') != null){
+            $сase->name = $req->input('name');
+        }
+        else{
+            Session::flash('status', 'Пожалуйста введите название кейса');
+            return redirect()->back();
+        }
         
         if($req->file('image') != null)
         {
@@ -60,35 +67,80 @@ class CaseController extends Controller
                     $сase->preview = $image;
                     $сase->save();
                 }
+                // Если файл не является картинкой
                 else {
                     Session::flash('status', 'В изображении кейса должен быть файл формата: png, jpg или jpeg.');
                     return redirect()->back();
                 }
         }
-        $case = CaseModel::latest()->first();     
+        // Если нет файла для превью кейса
+        else{
+            Session::flash('status', 'Необходимо выбрать изображение кейса! (форматы: png, jpg или jpeg.)');
+            return redirect()->back();
+        }
 
-        dd($req->request);
-
+        $case = CaseModel::latest()->first();
+        $ctr = new CasesToResult();
+        $recs = $req->input('recs');
+        foreach ($recs as $rec) {
+            if (strpos($rec, 'толерантности') === false) {
+                if (strpos($rec, 'внушаемости') === false) {
+                    // Нет соответствий
+                    Session::flash('status', 'Хотел расколоть орех, но что-то пошло не так');
+                    return redirect()->back();
+                } else {
+                    // Слово "внушаемости" присутствует в текущем элементе $rec
+                    $ctr->t1result = $rec;
+                }
+            } else {
+                // Слово "толерантности" присутствует в текущем элементе $rec
+                $ctr->t2result = $rec;
+            }
+            $ctr->case_id = $case->id;
+            $ctr->save();
+        }
+        $i = 0;
         $filteredFiles = [];
         $files = $req->files;
         foreach ($files as $name => $file) {
             if (strpos($name, 'f') !== false) {
-                $filteredFiles[$name] = $file;
+                $filteredFiles[] = $file;
             }
         }
-        if ($filteredFiles != null) {
-            foreach ($filteredFiles as $fl) {
-                $file = new CaseMaterials();
-                $file->question_id = $case->id;
-                $flData = file_get_contents($fl->getRealPath());
-                $file->file = $flData;
-                $format = $fl->getClientOriginalExtension();
-                $file->format = $format;
-                $name = $fl->getClientOriginalName();
-                $file->name = $name;
-                $file->save();
+        $curTable = "";
+        $items = $req->request;
+        foreach ($items as $name => $item)
+        {
+            if (strpos($name, 'q') !== false) {
+                $curTable = "questions";
+                $question = new CaseQuestion();
+                $question->text = $item;
+                $question->case_id = $case->id;
+                $question->save();
+                if ($filteredFiles[$i] != null) {
+                        $fl = $filteredFiles[$i];
+                        $question = CaseQuestion::latest()->first();
+                        $file = new CaseMaterials();
+                        $file->question_id = $question->id;
+                        $flData = file_get_contents($fl->getRealPath());
+                        $file->file = $flData;
+                        $format = $fl->getClientOriginalExtension();
+                        $file->format = $format;
+                        $name = $fl->getClientOriginalName();
+                        $file->name = $name;
+                        $file->save();
+                        $i++;
+                }
+            }
+            if (strpos($name, 'a') !== false) {
+                $curTable = "answers";
+                $question = CaseQuestion::latest()->first();
+                $answer = new CaseAnswer();
+                $answer->text = $item;
+                $answer->caseQuestion_id = $question->id;
             }
         }
+       
 
         dd('succes');
         // return view('update', [

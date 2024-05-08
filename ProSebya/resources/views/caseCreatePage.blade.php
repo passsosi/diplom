@@ -19,6 +19,19 @@
                     <input type="file" id="image"  name="image">
                 </div>
 
+                <select name="recs[]">
+                    <option type="text" id="recommend" name="recommend" value="Высокий уровень внушаемости">Высокий уровень внушаемости</option>
+                    <option type="text" id="recommend" name="recommend" value="Средний уровень внушаемости">Средний уровень внушаемости</option>
+                    <option type="text" id="recommend" name="recommend" value="Низкий уровень внушаемости">Низкий уровень внушаемости</option>
+                    <option type="text" id="recommend" name="recommend" value="Высокий уровень толерантности">Высокий уровень толерантности</option>
+                    <option type="text" id="recommend" name="recommend" value="Средний уровень толерантности">Средний уровень толерантности</option>
+                    <option type="text" id="recommend" name="recommend" value="Низкий уровень толерантности">Низкий уровень толерантности</option>
+                </select>
+                
+                <div>
+                    <button type="button" onclick="createRec()" id="createRecsBtn">Добавить рекомендацию</button>
+                </div>
+
                 <div>
                     <button type="button" onclick="createQuestion()" id="addFieldsBtn">Создать вопрос</button>
                 </div>
@@ -146,6 +159,12 @@
 
                     i2++;
                     a2 = i2.toString() + "a" + i.toString();
+                }
+
+                function createRec() {
+                var select = document.querySelector('select');
+                var newSelect = select.cloneNode(true);
+                select.insertAdjacentElement('afterend', newSelect);
                 }
             </script>
 

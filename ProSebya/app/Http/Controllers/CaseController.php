@@ -80,9 +80,10 @@ class CaseController extends Controller
         }
 
         $case = CaseModel::latest()->first();
-        $ctr = new CasesToResult();
         $recs = $req->input('recs');
         foreach ($recs as $rec) {
+            $ctr = new CasesToResult();
+            $ctr->case_id = $case->id;
             if (strpos($rec, 'толерантности') === false) {
                 if (strpos($rec, 'внушаемости') === false) {
                     // Нет соответствий
@@ -96,7 +97,6 @@ class CaseController extends Controller
                 // Слово "толерантности" присутствует в текущем элементе $rec
                 $ctr->t2result = $rec;
             }
-            $ctr->case_id = $case->id;
             $ctr->save();
         }
         $i = 0;
@@ -132,12 +132,13 @@ class CaseController extends Controller
                         $i++;
                 }
             }
-            if (strpos($name, 'a') !== false) {
+            if (strpos($name, 'answer') !== false) {
                 $curTable = "answers";
                 $question = CaseQuestion::latest()->first();
                 $answer = new CaseAnswer();
                 $answer->text = $item;
                 $answer->caseQuestion_id = $question->id;
+                $answer->save();
             }
         }
        

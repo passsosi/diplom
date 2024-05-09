@@ -44,7 +44,7 @@
                                     <div class="card-content">
                                         <h2 class="card-text">{{ $el->name }}</h2>
                                         <button class="test-button" type="button"
-                                            onclick="redirectC({{ $el->id }})">Пройти тест</button>
+                                            onclick="redirectC({{ $el->id }})">Пройти</button>
                                     </div>
                                 </div>
 

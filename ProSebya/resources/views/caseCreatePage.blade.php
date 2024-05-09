@@ -53,7 +53,7 @@
             <script >
                 var i = 1;
                 var q = "q";
-                var a = "a";
+                var a = "answer";
                 var b = "b";
                 var f = "f";
 
@@ -119,13 +119,13 @@
 
                     i++;
                     q = "q" + i.toString();
-                    a = "a" + i.toString();
+                    a = "answer" + i.toString();
                     b = "b" + i.toString();
                     f = "f" + i.toString();
                 }
 
                 var i2 = 1;
-                var a2 = i2.toString() + "a";
+                var a2 = i2.toString() + "answer";
 
                 function addAnswerBtn(btnId){
 
@@ -158,7 +158,7 @@
                     textInput.parentNode.insertAdjacentElement('afterend', button1);
 
                     i2++;
-                    a2 = i2.toString() + "a" + i.toString();
+                    a2 = i2.toString() + "answer" + i.toString();
                 }
 
                 function createRec() {

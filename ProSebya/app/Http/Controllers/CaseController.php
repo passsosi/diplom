@@ -16,11 +16,10 @@ class CaseController extends Controller
     public function caseOutput($id)
     {
         if (Auth::check()) {
-        $cData  = CaseModel::where('id', $id)->get();
+        $cData = CaseModel::where('id', $id)->get();
         $qData = CaseQuestion::where('case_id', $id)->get();
-        $mData = CaseMaterials::all();
-        $aData = CaseAnswer::all();
-
+        $mData = CaseMaterials::whereIn('question_id', $qData->pluck('id'))->get();
+        $aData = CaseAnswer::whereIn('caseQuestion_id', $qData->pluck('id'))->get();
         if(isset($qData[0])){
             return view('casePage', [
                 'cData' => $cData,

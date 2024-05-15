@@ -7,6 +7,7 @@ use App\models\CaseQuestion;
 use App\models\CaseMaterials;
 use App\models\CaseAnswer;
 use App\models\CasesToResult;
+use App\models\CaseResult;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Auth;
 use App\models\User;
@@ -46,109 +47,129 @@ class CaseController extends Controller
     }
 
     public function caseCreate(Request $req)
-    {       
-        $сase = new CaseModel();
-        if($req->input('name') != null){
-            $сase->name = $req->input('name');
-        }
-        else{
-            Session::flash('status', 'Пожалуйста введите название кейса');
-            return redirect()->back();
-        }
-        
-        if($req->file('image') != null)
-        {
-            $img = $req->file('image');
-                if ($img->getClientOriginalExtension() == 'png' || $img->getClientOriginalExtension() == 'jpeg' || $img->getClientOriginalExtension() == 'jpg')
-                {
-                   $imgData = file_get_contents($img->getRealPath());
-                    $image = $imgData;
-                    $сase->preview = $image;
-                    $сase->save();
-                }
-                // Если файл не является картинкой
-                else {
-                    Session::flash('status', 'В изображении кейса должен быть файл формата: png, jpg или jpeg.');
-                    return redirect()->back();
-                }
-        }
-        // Если нет файла для превью кейса
-        else{
-            Session::flash('status', 'Необходимо выбрать изображение кейса! (форматы: png, jpg или jpeg.)');
-            return redirect()->back();
-        }
+    {
+        $user = auth()->user();
+        if ($user->user_role == 2 || $user->user_role == 3) { // если пользователь достоин
 
-        $case = CaseModel::latest()->first();
-        $recs = $req->input('recs');
-        foreach ($recs as $rec) {
-            $ctr = new CasesToResult();
-            $ctr->case_id = $case->id;
-            if (strpos($rec, 'толерантности') === false) {
-                if (strpos($rec, 'внушаемости') === false) {
-                    // Нет соответствий
-                    Session::flash('status', 'Хотел расколоть орех, но что-то пошло не так');
-                    return redirect()->back();
+            $сase = new CaseModel();
+            if($req->input('name') != null){
+                $сase->name = $req->input('name');
+            }
+            else{
+                Session::flash('status', 'Пожалуйста введите название кейса');
+                return redirect()->back();
+            }
+            
+            if($req->file('image') != null)
+            {
+                $img = $req->file('image');
+                    if ($img->getClientOriginalExtension() == 'png' || $img->getClientOriginalExtension() == 'jpeg' || $img->getClientOriginalExtension() == 'jpg')
+                    {
+                    $imgData = file_get_contents($img->getRealPath());
+                        $image = $imgData;
+                        $сase->preview = $image;
+                        $сase->save();
+                    }
+                    // Если файл не является картинкой
+                    else {
+                        Session::flash('status', 'В изображении кейса должен быть файл формата: png, jpg или jpeg.');
+                        return redirect()->back();
+                    }
+            }
+            // Если нет файла для превью кейса
+            else{
+                Session::flash('status', 'Необходимо выбрать изображение кейса! (форматы: png, jpg или jpeg.)');
+                return redirect()->back();
+            }
+
+            $case = CaseModel::latest()->first();
+            $recs = $req->input('recs');
+            foreach ($recs as $rec) {
+                $ctr = new CasesToResult();
+                $ctr->case_id = $case->id;
+                if (strpos($rec, 'толерантности') === false) {
+                    if (strpos($rec, 'внушаемости') === false) {
+                        // Нет соответствий
+                        Session::flash('status', 'Хотел расколоть орех, но что-то пошло не так');
+                        return redirect()->back();
+                    } else {
+                        // Слово "внушаемости" присутствует в текущем элементе $rec
+                        $ctr->t1result = $rec;
+                    }
                 } else {
-                    // Слово "внушаемости" присутствует в текущем элементе $rec
-                    $ctr->t1result = $rec;
+                    // Слово "толерантности" присутствует в текущем элементе $rec
+                    $ctr->t2result = $rec;
                 }
-            } else {
-                // Слово "толерантности" присутствует в текущем элементе $rec
-                $ctr->t2result = $rec;
+                $ctr->save();
             }
-            $ctr->save();
-        }
-        $i = 0;
-        $filteredFiles = [];
-        $files = $req->files;
-        foreach ($files as $name => $file) {
-            if (strpos($name, 'f') !== false) {
-                $filteredFiles[] = $file;
-            }
-        }
-        $curTable = "";
-        $items = $req->request;
-        foreach ($items as $name => $item)
-        {
-            if (strpos($name, 'q') !== false) {
-                $curTable = "questions";
-                $question = new CaseQuestion();
-                $question->text = $item;
-                $question->case_id = $case->id;
-                $question->save();
-                if ($filteredFiles[$i] != null) {
-                        $fl = $filteredFiles[$i];
-                        $question = CaseQuestion::latest()->first();
-                        $file = new CaseMaterials();
-                        $file->question_id = $question->id;
-                        $flData = file_get_contents($fl->getRealPath());
-                        $file->file = $flData;
-                        $format = $fl->getClientOriginalExtension();
-                        $file->format = $format;
-                        $name = $fl->getClientOriginalName();
-                        $file->name = $name;
-                        $file->save();
-                        $i++;
+            $i = 0;
+            $filteredFiles = [];
+            $files = $req->files;
+            foreach ($files as $name => $file) {
+                if (strpos($name, 'f') !== false) {
+                    $filteredFiles[] = $file;
                 }
             }
-            if (strpos($name, 'answer') !== false) {
-                $curTable = "answers";
-                $question = CaseQuestion::latest()->first();
-                $answer = new CaseAnswer();
-                $answer->text = $item;
-                $answer->caseQuestion_id = $question->id;
-                $answer->save();
+            $curTable = "";
+            $items = $req->request;
+            foreach ($items as $name => $item)
+            {
+                if (strpos($name, 'q') !== false) {
+                    $curTable = "questions";
+                    $question = new CaseQuestion();
+                    $question->text = $item;
+                    $question->case_id = $case->id;
+                    $question->save();
+                    if ($filteredFiles[$i] != null) {
+                            $fl = $filteredFiles[$i];
+                            $question = CaseQuestion::latest()->first();
+                            $file = new CaseMaterials();
+                            $file->question_id = $question->id;
+                            $flData = file_get_contents($fl->getRealPath());
+                            $file->file = $flData;
+                            $format = $fl->getClientOriginalExtension();
+                            $file->format = $format;
+                            $name = $fl->getClientOriginalName();
+                            $file->name = $name;
+                            $file->save();
+                            $i++;
+                    }
+                }
+                if (strpos($name, 'answer') !== false) {
+                    $curTable = "answers";
+                    $question = CaseQuestion::latest()->first();
+                    $answer = new CaseAnswer();
+                    $answer->text = $item;
+                    $answer->caseQuestion_id = $question->id;
+                    $answer->save();
+                }
+                
             }
         }
-       
+        else{
+            return redirect(route('home'))->withErrors(['err' => 'Вы не можете создавать кейсы']);
+        }
+    }
 
-        dd('succes');
-        // return view('update', [
-        //     'data' => $data,
-        //     'images' => $images,
-        //     'documents' => $docs,
-        //     'category' => $category,
-        //     'itemCategory' => $itemCategory
-        // ]);   
+    public function caseResult(Request $req, $case_id)
+    {
+    $user = auth()->user(); // получаем данные пользователя
+    
+    foreach($req->answers as $el){
+    $caseResult = new caseResult();
+    $answer = CaseAnswer::where('id', $el)->get();
+    $question_id = $answer[0]->caseQuestion_id;
+    $caseResult->user_id = $user->id;
+    $caseResult->answer_id = $el;
+    $caseResult->question_id = $question_id;
+    $caseResult->case_id = $case_id;
+    $caseResult->save();
+    }
+    return redirect('/');
+    }
+    
+    public function userCaseResult($case_id)
+    {
+
     }
 }

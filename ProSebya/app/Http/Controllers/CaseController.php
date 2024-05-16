@@ -17,25 +17,32 @@ class CaseController extends Controller
     public function caseOutput($id)
     {
         if (Auth::check()) {
-        $cData = CaseModel::where('id', $id)->get();
-        $qData = CaseQuestion::where('case_id', $id)->get();
-        $mData = CaseMaterials::whereIn('question_id', $qData->pluck('id'))->get();
-        $aData = CaseAnswer::whereIn('caseQuestion_id', $qData->pluck('id'))->get();
-        if(isset($qData[0])){
-            return view('casePage', [
-                'cData' => $cData,
-                'mData' => $mData,
-                'qData' => $qData,
-                'aData' => $aData
-                ]);
-        }
-        else{
-            return redirect('/errorPage');
-        }
-        }
-        else{
-            return redirect(route('home'))->withErrors(['err' => 'Вы не вошли в аккаунт']);
-        }
+            $user = auth()->user();
+            $caseResult = caseResult::where('user_id', $user->id)->get();
+            foreach($caseResult as $el){
+                if($el->case_id == $id){
+                    return redirect(route('home'))->withErrors(['err' => 'Вы уже прошли этот кейс']);
+                }
+            }
+            $cData = CaseModel::where('id', $id)->get();
+            $qData = CaseQuestion::where('case_id', $id)->get();
+            $mData = CaseMaterials::whereIn('question_id', $qData->pluck('id'))->get();
+            $aData = CaseAnswer::whereIn('caseQuestion_id', $qData->pluck('id'))->get();
+            if(isset($qData[0])){
+                return view('casePage', [
+                    'cData' => $cData,
+                    'mData' => $mData,
+                    'qData' => $qData,
+                    'aData' => $aData
+                    ]);
+            }
+            else{
+                return redirect('/errorPage');
+            }
+            }
+            else{
+                return redirect(route('home'))->withErrors(['err' => 'Вы не вошли в аккаунт']);
+            }
     }
 
     public function caseCreateView()
@@ -145,6 +152,7 @@ class CaseController extends Controller
                 }
                 
             }
+            return redirect('/');
         }
         else{
             return redirect(route('home'))->withErrors(['err' => 'Вы не можете создавать кейсы']);
@@ -153,23 +161,32 @@ class CaseController extends Controller
 
     public function caseResult(Request $req, $case_id)
     {
-    $user = auth()->user(); // получаем данные пользователя
-    
-    foreach($req->answers as $el){
-    $caseResult = new caseResult();
-    $answer = CaseAnswer::where('id', $el)->get();
-    $question_id = $answer[0]->caseQuestion_id;
-    $caseResult->user_id = $user->id;
-    $caseResult->answer_id = $el;
-    $caseResult->question_id = $question_id;
-    $caseResult->case_id = $case_id;
-    $caseResult->save();
+        $user = auth()->user(); // получаем данные пользователя
+        
+        foreach($req->answers as $el){
+        $caseResult = new caseResult();
+        $answer = CaseAnswer::where('id', $el)->get();
+        $question_id = $answer[0]->caseQuestion_id;
+        $caseResult->user_id = $user->id;
+        $caseResult->answer_id = $el;
+        $caseResult->question_id = $question_id;
+        $caseResult->case_id = $case_id;
+        $caseResult->save();
+        }
+        return redirect('/');
     }
-    return redirect('/');
-    }
     
-    public function userCaseResult($case_id)
+    public function userCaseResult($user_id, $case_id)
     {
-
+        $int_case_id = (int) $case_id;
+        $int_user_id = (int) $user_id;
+        $caseResult = caseResult::where('case_id', $int_case_id)->where('user_id', $int_user_id)->get();
+        $user = User::where('id', $user_id)->get();
+        $FIO = $user[0]->name . ' ' . $user[0]->surname . ' ' . $user[0]->patronymic;
+        $case = CaseModel::where('id', $case_id)->get();
+        $case_name = $case[0]->name;
+        $answers = CaseAnswer::whereIn('id', $caseResult->pluck('answer_id'))->get();
+        $questions = CaseQuestion::whereIn('id', $caseResult->pluck('question_id'))->get();
+        return view('user-case-result', ['caseResult' => $caseResult, 'FIO' => $FIO, 'caseName' => $case_name, 'answers'=> $answers, 'questions' => $questions]);
     }
 }

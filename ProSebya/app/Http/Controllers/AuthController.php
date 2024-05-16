@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use App\models\User;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Session;
 
 class AuthController extends Controller
 {
@@ -27,14 +28,22 @@ class AuthController extends Controller
             $img = $imageData;
         }
 
+        $age = (int)$request->input('age');
+        if (!$age) {
+            return redirect(route('register'))->withErrors(['age' => 'Укажите возраст целым числом']);
+        }
+
+
         $user = new User([
             'name' => $request->input('name'),
+            'surname' => $request->input('surname'),
+            'patronymic' => $request->input('patronymic'),
+            'age' => $age,
             'email' => $request->input('email'),
             'password' => Hash::make($request->input('password')),
             'user_role' => $role,
             'image' => $img
         ]);
-
         $user->save();
 
         //event(new Registered($user));

@@ -23,7 +23,7 @@ Route::get('/casepage/{id}', [CaseController::class, 'caseOutput'])->name('casep
 
 Route::post('/{cid}/caseResult', [CaseController::class, 'caseResult'])->name('caseResult');
 
-Route::get('/{cid}/case-result', [CaseController::class, 'userCaseResult'])->name('case-result');
+Route::get('/case-result/{uid}/{cid}', [CaseController::class, 'userCaseResult'])->name('case-result');
 
 Route::get('/caseCreate', [CaseController::class, 'caseCreateView'])->name('caseCreateView');
 

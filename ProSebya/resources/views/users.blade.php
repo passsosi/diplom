@@ -21,6 +21,7 @@
       <td style="border: 1px solid rgb(83, 128, 251); padding: 10px;">{{$user->test1resultSTRING}}</td>
       <td style="border: 1px solid rgb(83, 128, 251); padding: 10px;">{{$user->test2resultSTRING}}</td>
       <td><a href="/user-profile/{{$user->id}}">Подробнее</a></td>
+      
     </tr>
     @endforeach
   </table>

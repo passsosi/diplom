@@ -21,6 +21,12 @@
     @else
         <h3 style="color: red">Второй тест не пройден...</h3>
     @endif
+    <button class="test-button" type="button" onclick="redirect()">Редактировать</button>
+    <script>
+        function redirect() {
+            window.location.href = "{{ route('editProfileView') }}";
+        }
+    </script>
     </div>
 </div>
 

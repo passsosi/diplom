@@ -21,6 +21,8 @@ Route::get('/file-outpute/{id}', [FileController::class, 'file_preview'])->name(
 
 Route::get('/casepage/{id}', [CaseController::class, 'caseOutput'])->name('casepage');
 
+Route::get('/case-delete/{id}', [CaseController::class, 'caseDelete'])->name('case-delete');
+
 Route::post('/{cid}/caseResult', [CaseController::class, 'caseResult'])->name('caseResult');
 
 Route::get('/case-result/{uid}/{cid}', [CaseController::class, 'userCaseResult'])->name('case-result');
@@ -38,6 +40,12 @@ Route::post('/{tid}/{tmid}/testResult', [TestController::class, 'testResult'])->
 Route::get('/{tid}/{tmid}/compTestPage', [TestController::class, 'compView'])->name('compTestPage');
 
 Route::get('/profile', [ProfileController::class, 'profileOutput'])->name('profile');
+
+Route::get('/profile-edit', [ProfileController::class, 'profileEditOutput'])->name('editProfileView');
+
+Route::post('/profile-edit', [ProfileController::class, 'profileEdit'])->name('editProfile');
+
+Route::post('/profile-edit-auth', [ProfileController::class, 'profileEditAuth'])->name('editProfileAuth');
 
 Route::get('/user-profile/{id}', [ProfileController::class, 'userProfile'])->name('user-profile');
 

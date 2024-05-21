@@ -44,13 +44,23 @@
                                 <div class="card-content">
                                     <h2 class="card-text">{{ $el->name }}</h2>
                                     <button class="test-button" type="button"
-                                        onclick="redirectC({{ $el->id }})">Пройти</button>
+                                        onclick="redirectC({{ $el->id }})">Пройти
+                                    </button>
+                                    @if ($user->user_role > 1)
+                                    <button class="test-button" type="button"
+                                        onclick="redirectDC({{ $el->id }})">Удалить
+                                    </button>
+
+                                    @endif
                                 </div>
                             </div>
 
                             <script>
                                 function redirectC(categoryId) {
                                     window.location.href = "{{ route('casepage', ':categoryId') }}".replace(':categoryId', categoryId);
+                                }
+                                function redirectDC(id) {
+                                    window.location.href = "{{ route('case-delete', ':id') }}".replace(':id', id);
                                 }
                             </script>
                         @endforeach

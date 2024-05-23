@@ -8,6 +8,7 @@ use App\models\CaseMaterials;
 use App\models\CaseAnswer;
 use App\models\CasesToResult;
 use App\models\CaseResult;
+use App\models\Risk;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Auth;
 use App\models\User;
@@ -72,11 +73,11 @@ class CaseController extends Controller
             }
 
             if ( $req->file( 'image' ) != null ) // провверка на наличие изображения кейса
- {
+            {
                 $img = $req->file( 'image' );
                 // получаем изображение из инпута
                 if ( $img->getClientOriginalExtension() == 'png' || $img->getClientOriginalExtension() == 'jpeg' || $img->getClientOriginalExtension() == 'jpg' ) // проверка на совпадение типов изображения
- {
+                {
                     $imgData = file_get_contents( $img->getRealPath() );
                     // получем изображение в формате LONGBLOB
                     $image = $imgData;
@@ -130,6 +131,8 @@ class CaseController extends Controller
             }
             $curTable = '';
             $items = $req->request;
+            $risk_count = 0;
+            $risk = $req->input( 'risk' );
             foreach ( $items as $name => $item ) //сортировка текст инпутов в зависимости от названия
             {
                 if ( strpos( $name, 'q' ) !== false ) {
@@ -144,7 +147,7 @@ class CaseController extends Controller
                     if ( $filteredFiles[ $i ] != null ) {
                         // если есть файл - добавляем с привязкой к вопросу
                         $fl = $filteredFiles[ $i ];
-                        $question = CaseQuestion::latest()->first();
+                        //$question = CaseQuestion::latest()->first();
                         $file = new CaseMaterials();
                         $file->question_id = $question->id;
                         $flData = file_get_contents( $fl->getRealPath() );
@@ -161,14 +164,15 @@ class CaseController extends Controller
                 if ( strpos( $name, 'answer' ) !== false ) {
                     // это тексты ответов к данному вопросу
                     $curTable = 'answers';
-                    $question = CaseQuestion::latest()->first();
+                    //$question = CaseQuestion::latest()->first();
                     $answer = new CaseAnswer();
                     $answer->text = $item;
                     $answer->caseQuestion_id = $question->id;
+                    $answer->risk = $risk[$risk_count];
                     $answer->save();
+                    $risk_count++;
                     // сохраняем
                 }
-
             }
             return redirect( '/' );
         } else {
@@ -182,7 +186,7 @@ class CaseController extends Controller
         $user = auth()->user();
         // если пользователь авторизирован
         if ( $user->user_role == 2 || $user->user_role == 3 ) // если пользователь достоин
-        {
+ {
             $caseResult = caseResult::where( 'case_id', $id )->get();
             $cData = CaseModel::where( 'id', $id )->get();
             $qData = CaseQuestion::where( 'case_id', $id )->get();
@@ -207,12 +211,13 @@ class CaseController extends Controller
  {
         $user = auth()->user();
         // получаем данные пользователя
-
+        $answer_count = 0;
+        $answer_sum = 0;
         foreach ( $req->answers as $el ) {
             // перебираем ответы пользователяя
             $caseResult = new caseResult();
-
             $answer = CaseAnswer::where( 'id', $el )->get();
+            $risk = $answer[0]->risk;
             $question_id = $answer[ 0 ]->caseQuestion_id;
             $caseResult->user_id = $user->id;
             $caseResult->answer_id = $el;
@@ -220,7 +225,24 @@ class CaseController extends Controller
             $caseResult->case_id = $case_id;
             $caseResult->save();
             // сохраняем
+            $answer_count++;
+            $answer_sum = $answer_sum + $risk;
         }
+        $riskResult = $answer_sum/$answer_count;
+        if($riskResult <= 1){
+            $riskSTRING = "Низкие риски";
+        }
+        if($riskResult <= 2 && $riskResult > 1){
+            $riskSTRING = "Средние риски";
+        }
+        if($riskResult > 2){
+            $riskSTRING = "Высокие риски";
+        }
+        $userRisk = new Risk();
+        $userRisk->user_id = $user->id;
+        $userRisk->case_id = $case_id;
+        $userRisk->riskSTRING = $riskSTRING;
+        $userRisk->save();
         return redirect( '/' );
     }
 

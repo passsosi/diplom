@@ -173,6 +173,59 @@ class TestController extends Controller
             'txt' => $txt
             ]);
         }
+        elseif($tm_id == 3) // если id метода равно 2
+        {
+            $numQuestion = 1;
+            $point = 0;
+            foreach($req->answers as $el){ // пересчет ответов
+                if($numQuestion <= 6){
+                    if($el > 3){ 
+                        $point = $point + 1;
+                    }
+                } elseif($numQuestion <= 12){ 
+                    if($el < 4){
+                        $point = $point + 1; 
+                    }
+                }elseif($numQuestion <= 18){ 
+                    if($el < 4){
+                        $point = $point + 1; 
+                    }
+                }elseif($numQuestion <= 24){ 
+                    if($el < 4){
+                        $point = $point + 1; 
+                    }
+                }elseif($numQuestion <= 30){ 
+                    if($el < 4){
+                        $point = $point + 1; 
+                    }
+                }elseif($numQuestion <= 36){ 
+                    if($el < 4){
+                        $point = $point + 1; 
+                    }
+                }elseif($numQuestion <= 42){ 
+                    if($el < 4){
+                        $point = $point + 1; 
+                    }
+                }elseif($numQuestion <= 48){ 
+                    if($el < 4){
+                        $point = $point + 1; 
+                    }
+                }elseif($numQuestion <= 54){ 
+                    if($el < 4){
+                        $point = $point + 1; 
+                    }
+                }elseif($numQuestion <= 60){ 
+                    if($el < 4){
+                        $point = $point + 1; 
+                    }
+                }elseif($numQuestion <= 66){
+                    if($el < 4){
+                        $point = $point + 1; 
+                    }
+                }
+                $numQuestion = $numQuestion + 1; // номер вопроса + 1
+            }
+        }
     }
 
     public function compView($id)

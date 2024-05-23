@@ -30,7 +30,14 @@
 
     <div style="margin: 0px 0px 50px 15px;">
         @foreach($cases as $case)
+        <div>
             <a href="/case-result/{{$user->id}}/{{$case->id}}">Результаты кейса "{{$case->name}}"</a>
+            @foreach($risk as $r)
+                @if($r->case_id === $case->id)
+                    <h4>{{$r->riskSTRING}}</h4>
+                @endif
+            @endforeach
+        </div>
         @endforeach
     </div>
 

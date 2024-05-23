@@ -10,22 +10,24 @@
             <h1 class="page_tests-title">Тесты</h1>
             <div class="test-cards">
                 @foreach ($testData as $el)
-                    <div class="test-card">
-                        <img src="data:image/jpeg;base64,{{ base64_encode($el->image) }}" class="img-fluid w-100 card-img-top"
-                            alt="Image">
-                        <div class="card-content">
-                            <h2 class="card-text">{{ $el->name }}</h2>
-                            <button class="test-button" type="button" onclick="redirectT({{ $el->id }})">Пройти
-                                тест</button>
+                    @if ($el->id !== 3)
+                        <div class="test-card">
+                            <img src="data:image/jpeg;base64,{{ base64_encode($el->image) }}"
+                                class="img-fluid w-100 card-img-top" alt="Image">
+                            <div class="card-content">
+                                <h2 class="card-text">{{ $el->name }}</h2>
+                                <button class="test-button" type="button" onclick="redirectT({{ $el->id }})">Пройти
+                                    тест</button>
+                            </div>
+
                         </div>
 
-                    </div>
-
-                    <script>
-                        function redirectT(categoryId) {
-                            window.location.href = "{{ route('testpage', ':categoryId') }}".replace(':categoryId', categoryId);
-                        }
-                    </script>
+                        <script>
+                            function redirectT(categoryId) {
+                                window.location.href = "{{ route('testpage', ':categoryId') }}".replace(':categoryId', categoryId);
+                            }
+                        </script>
+                    @endif
                 @endforeach
             </div>
 
@@ -47,10 +49,9 @@
                                         onclick="redirectC({{ $el->id }})">Пройти
                                     </button>
                                     @if ($user->user_role > 1)
-                                    <button class="test-button" type="button"
-                                        onclick="redirectDC({{ $el->id }})">Удалить
-                                    </button>
-
+                                        <button class="test-button" type="button"
+                                            onclick="redirectDC({{ $el->id }})">Удалить
+                                        </button>
                                     @endif
                                 </div>
                             </div>
@@ -59,15 +60,14 @@
                                 function redirectC(categoryId) {
                                     window.location.href = "{{ route('casepage', ':categoryId') }}".replace(':categoryId', categoryId);
                                 }
+
                                 function redirectDC(id) {
                                     window.location.href = "{{ route('case-delete', ':id') }}".replace(':id', id);
                                 }
                             </script>
                         @endforeach
                         @if ($user->user_role > 1)
-                            <button class="test-button" type="button" onclick="createC()">Создать кейс
-                            </button>
-
+                                <button class="test-button " type="button" onclick="createC()">Создать кейс</button>
                             <script>
                                 function createC(categoryId) {
                                     window.location.href = "{{ route('caseCreateView') }}".replace(':categoryId', categoryId);

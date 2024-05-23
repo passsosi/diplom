@@ -5,6 +5,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Auth;
 use App\models\User;
+use App\models\Risk;
 use App\models\CaseResult;
 use App\models\CaseModel;
 use Illuminate\Support\Facades\Hash;
@@ -24,6 +25,7 @@ class ProfileController extends Controller
  {
         $user = User::where( 'id', $user_id )->get();
         $caseResult = caseResult::where( 'user_id', $user_id )->get();
+        $risk = Risk::where( 'user_id', $user_id )->get();
         $cases = [];
         $i = 0;
         foreach ( $caseResult as $el ) {
@@ -35,7 +37,8 @@ class ProfileController extends Controller
         $case = CaseModel::whereIn( 'id', $cases )->get();
         return view( 'user-profile', [
             'user' => $user[ 0 ],
-            'cases' => $case
+            'cases' => $case,
+            'risk' => $risk
         ] );
     }
 

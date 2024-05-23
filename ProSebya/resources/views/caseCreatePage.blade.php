@@ -83,6 +83,28 @@
                     textInput.id = i;
                     textInputDiv.appendChild(textInput);
 
+                    //Добавлены риски для ответов
+                    const selectDiv = document.createElement('div');
+                    const select = document.createElement('select');
+                    select.name = 'risk[]';
+
+                    const option1 = document.createElement('option');
+                    option1.text = 'Низкий уровень риска';
+                    option1.value = '1';
+                    select.appendChild(option1);
+
+                    const option2 = document.createElement('option');
+                    option2.text = 'Средний уровень риска';
+                    option2.value = '2';
+                    select.appendChild(option2);
+
+                    const option3 = document.createElement('option');
+                    option3.text = 'Высокий уровень риска';
+                    option3.value = '3';
+                    select.appendChild(option3);
+                    selectDiv.appendChild(select);
+                    //Добавлены риски для ответов
+                    
                     const btnDiv = document.createElement('div');
                     const button = document.createElement('button');
                     button.type = 'button';
@@ -114,6 +136,7 @@
                     questionDiv.appendChild(textareaDiv);
                     questionDiv.appendChild(btnDiv);
                     questionDiv.appendChild(textInputDiv);
+                    questionDiv.appendChild(selectDiv);
                     questionDiv.appendChild(btnDiv2);
                     addFieldsBtn.before(questionDiv);
 
@@ -136,6 +159,29 @@
                     textInput.id = i2;
                     textInputDiv.id = btnId;
                     textInputDiv.appendChild(textInput);
+
+                    //Добавлены риски для ответов
+                    const selectDiv = document.createElement('div');
+                    const select = document.createElement('select');
+                    select.name = 'risk[]';
+
+                    const option1 = document.createElement('option');
+                    option1.text = 'Низкий уровень риска';
+                    option1.value = '1';
+                    select.appendChild(option1);
+
+                    const option2 = document.createElement('option');
+                    option2.text = 'Средний уровень риска';
+                    option2.value = '2';
+                    select.appendChild(option2);
+
+                    const option3 = document.createElement('option');
+                    option3.text = 'Высокий уровень риска';
+                    option3.value = '3';
+                    select.appendChild(option3);
+                    selectDiv.appendChild(select);
+                    //Добавлены риски для ответов
+                    textInputDiv.appendChild(selectDiv);
 
                     const assignBtn = document.createElement('button');
 
